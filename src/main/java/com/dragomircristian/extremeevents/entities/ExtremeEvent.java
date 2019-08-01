@@ -1,5 +1,9 @@
 package com.dragomircristian.extremeevents.entities;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,12 +12,23 @@ import java.util.Date;
 
 @Entity
 public class ExtremeEvent {
+    @Value("${url.openCageApiUrl}")
+    private String openCageApiUrl;
+
+    @Value("${key.openCageApiUrl}")
+    private String openCageApiKey;
+
+    @Value("${url.pretty}")
+    private String pretty;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Location location;
     private String title;
     private String description;
+    private String city;
+    private String country;
     private Date timestamp;
     private Weather weather;
     private String img_link;
@@ -117,5 +132,30 @@ public class ExtremeEvent {
 
     public void setVid_link(String vid_link) {
         this.vid_link = vid_link;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setCityAndCountry() {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(openCageApiUrl + this.location.getLatitude() + "%2C" + this.location.getLongitude() + "&key=" + openCageApiKey + pretty, String.class);
+
+        // TO DO  see the response and set the city and country
+        System.out.println(response);
+
     }
 }
