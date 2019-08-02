@@ -1,40 +1,29 @@
 package com.dragomircristian.extremeevents.entities;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Date;
+import java.sql.Timestamp;
 
-@Entity
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.Data;
+
+@Data
+@Document(collection = "extremeevents")
 public class ExtremeEvent {
-    @Value("${url.openCageApiUrl}")
-    private String openCageApiUrl;
-
-    @Value("${key.openCageApiUrl}")
-    private String openCageApiKey;
-
-    @Value("${url.pretty}")
-    private String pretty;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Location location;
     private String title;
     private String description;
-    private String city;
+    private String county;
     private String country;
-    private Date timestamp;
+    private Timestamp timestamp;
     private Weather weather;
     private String img_link;
     private String vid_link;
 
-    public ExtremeEvent(Location location, String title, String description, Date timestamp, Weather weather, String img_link, String vid_link) {
+    public ExtremeEvent(Location location, String title, String description, Timestamp timestamp, Weather weather, String img_link, String vid_link) {
         this.location = location;
         this.title = title;
         this.description = description;
@@ -44,7 +33,7 @@ public class ExtremeEvent {
         this.vid_link = vid_link;
     }
 
-    public ExtremeEvent(Location location, String title, String description, Date timestamp, Weather weather, String img_link) {
+    public ExtremeEvent(Location location, String title, String description, Timestamp timestamp, Weather weather, String img_link) {
         this.location = location;
         this.title = title;
         this.description = description;
@@ -53,7 +42,7 @@ public class ExtremeEvent {
         this.img_link = img_link;
     }
 
-    public ExtremeEvent(String vid_link, Location location, String title, String description, Date timestamp, Weather weather) {
+    public ExtremeEvent(String vid_link, Location location, String title, String description, Timestamp timestamp, Weather weather) {
         this.location = location;
         this.title = title;
         this.description = description;
@@ -62,7 +51,7 @@ public class ExtremeEvent {
         this.vid_link = vid_link;
     }
 
-    public ExtremeEvent(Location location, String title, String description, Date timestamp, Weather weather) {
+    public ExtremeEvent(Location location, String title, String description, Timestamp timestamp, Weather weather) {
         this.location = location;
         this.title = title;
         this.description = description;
@@ -102,11 +91,11 @@ public class ExtremeEvent {
         this.description = description;
     }
 
-    public Date getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -134,12 +123,12 @@ public class ExtremeEvent {
         this.vid_link = vid_link;
     }
 
-    public String getCity() {
-        return city;
+    public String getCounty() {
+        return county;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCounty(String county) {
+        this.county = county;
     }
 
     public String getCountry() {
@@ -148,14 +137,5 @@ public class ExtremeEvent {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public void setCityAndCountry() {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.getForEntity(openCageApiUrl + this.location.getLatitude() + "%2C" + this.location.getLongitude() + "&key=" + openCageApiKey + pretty, String.class);
-
-        // TO DO  see the response and set the city and country
-        System.out.println(response);
-
     }
 }
