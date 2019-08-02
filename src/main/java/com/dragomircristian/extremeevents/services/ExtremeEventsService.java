@@ -16,8 +16,12 @@ public class ExtremeEventsService {
         return extremeEventsRepository.findById(id).get();
     }
 
-    public Iterable<ExtremeEvent> getAllExtremeEvents() {
-        return extremeEventsRepository.findAll();
+    public ArrayList<ExtremeEvent> getAllExtremeEvents() {
+        ArrayList<ExtremeEvent> list = new ArrayList<>();
+        for (ExtremeEvent extremeEvent : extremeEventsRepository.findAll()) {
+            list.add(extremeEvent);
+        }
+        return list;
     }
 
     public void deleteExtremeEventById(int id) {

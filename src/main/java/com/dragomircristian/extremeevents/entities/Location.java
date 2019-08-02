@@ -10,10 +10,10 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private double latitude;
-    private double longitude;
+    private String latitude;
+    private String longitude;
 
-    public Location(double latitude, double longitude) {
+    public Location(String latitude, String longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -22,19 +22,19 @@ public class Location {
 
     }
 
-    public double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 }
