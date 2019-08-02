@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Configuration
@@ -31,7 +34,7 @@ public class ExtremeEventsService {
     @Autowired
     ExtremeEventsRepository extremeEventsRepository;
 
-    public ExtremeEvent getExtremeEventById(Integer id) {
+    public ExtremeEvent getExtremeEventById(String id) {
         return extremeEventsRepository.findById(id).get();
     }
 
@@ -43,19 +46,27 @@ public class ExtremeEventsService {
         return list;
     }
 
-    public void deleteExtremeEventById(int id) {
+    public List<ExtremeEvent> findAllByCounty(String county, PageRequest pageRequest) {
+        return extremeEventsRepository.findAllByCounty(county, pageRequest);
+    }
+
+    public List<ExtremeEvent> findAllByCountry(String country, PageRequest pageRequest) {
+        return extremeEventsRepository.findAllByCountry(country, pageRequest);
+    }
+
+    public void deleteExtremeEventById(String id) {
         extremeEventsRepository.deleteById(id);
     }
 
-    public void updateExtremeEvent(ExtremeEvent student) {
-        this.extremeEventsRepository.save(student);
+    public void updateExtremeEvent(ExtremeEvent extremeEvent) {
+        this.extremeEventsRepository.save(extremeEvent);
     }
 
-    public void insertExtremeEvent(ExtremeEvent student) {
-        this.extremeEventsRepository.save(student);
+    public void insertExtremeEvent(ExtremeEvent extremeEvent) {
+        this.extremeEventsRepository.save(extremeEvent);
     }
 
-    public boolean exists(int id) {
+    public boolean exists(String id) {
         return extremeEventsRepository.findById(id).isPresent();
     }
 

@@ -4,18 +4,14 @@ import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.xml.crypto.Data;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/extreme-events")
@@ -23,6 +19,13 @@ public class ExtremeEventsController {
 
     @Autowired
     ExtremeEventsService extremeEventsService;
+
+    @RequestMapping(value = "/county/{county}?p={pageNumber}&s={pageSize}", method = RequestMethod.GET)
+    public ResponseEntity<String> findAllExtremeEvents(@PathVariable("county") String county, @PathVariable("pageNumber") int pageNumber, @PathVariable("pageSize") int pageSize) {
+//        List<ExtremeEvent> events = extremeEventsService.findAllByCounty(county, new PageRequest(pageNumber, pageSize));
+        return new ResponseEntity<>("haha", HttpStatus.OK);
+    }
+
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     public ResponseEntity<ArrayList> getAllExtremeEvents() {
@@ -36,9 +39,14 @@ public class ExtremeEventsController {
     @RequestMapping(value = "/ceva", method = RequestMethod.GET)
     public ResponseEntity<ExtremeEvent> something() {
         Location location = new Location("45.631910", "27.533800");
-        ExtremeEvent extremeEvent = new ExtremeEvent(location, "title", "description", new Timestamp(new Date().getTime()), new Weather(), "djnadinadna link");
+        ExtremeEvent extremeEvent = new ExtremeEvent(location, "title", "description", new Weather(), "djnadinadna link");
         extremeEventsService.setCityAndCountry(extremeEvent);
-        return new ResponseEntity<>(extremeEvent, HttpStatus.OK);
+        return new ResponseEntity<>(new ExtremeEvent(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public void deleteExtremeEvent(@PathVariable("id") String id) {
+        extremeEventsService.deleteExtremeEventById(id);
     }
 
 }
