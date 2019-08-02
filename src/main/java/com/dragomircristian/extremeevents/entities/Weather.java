@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "weather")
 public class Weather {
     @Id
-    private Integer id;
+    private String id;
     private String main;
     private String description;
     private double temperature;
@@ -34,11 +34,11 @@ public class Weather {
 
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

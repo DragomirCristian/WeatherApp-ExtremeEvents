@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "location")
 public class Location {
     @Id
-    private Integer id;
+    private String id;
     private String latitude;
     private String longitude;
 

@@ -2,6 +2,7 @@ package com.dragomircristian.extremeevents.entities;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
 import java.sql.Timestamp;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,58 +13,66 @@ import lombok.Data;
 @Document(collection = "extremeevents")
 public class ExtremeEvent {
     @Id
-    private Integer id;
+    private String id;
     private Location location;
     private String title;
     private String description;
     private String county;
     private String country;
-    private Timestamp timestamp;
+    private Date timestamp;
     private Weather weather;
     private String img_link;
     private String vid_link;
 
-    public ExtremeEvent(Location location, String title, String description, Timestamp timestamp, Weather weather, String img_link, String vid_link) {
+    public ExtremeEvent() {
+
+    }
+
+    public ExtremeEvent(Location location, String title, String description, Weather weather, String img_link, String vid_link) {
         this.location = location;
         this.title = title;
         this.description = description;
-        this.timestamp = timestamp;
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        this.timestamp = new Date(ts.getTime());
         this.weather = weather;
         this.img_link = img_link;
         this.vid_link = vid_link;
     }
 
-    public ExtremeEvent(Location location, String title, String description, Timestamp timestamp, Weather weather, String img_link) {
+    public ExtremeEvent(Location location, String title, String description, Weather weather, String img_link) {
         this.location = location;
         this.title = title;
         this.description = description;
-        this.timestamp = timestamp;
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        this.timestamp = new Date(ts.getTime());
         this.weather = weather;
         this.img_link = img_link;
     }
 
-    public ExtremeEvent(String vid_link, Location location, String title, String description, Timestamp timestamp, Weather weather) {
+    public ExtremeEvent(String vid_link, Location location, String title, String description, Weather weather) {
         this.location = location;
         this.title = title;
         this.description = description;
-        this.timestamp = timestamp;
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        this.timestamp = new Date(ts.getTime());
         this.weather = weather;
         this.vid_link = vid_link;
     }
 
-    public ExtremeEvent(Location location, String title, String description, Timestamp timestamp, Weather weather) {
+    public ExtremeEvent(Location location, String title, String description, Weather weather) {
         this.location = location;
         this.title = title;
         this.description = description;
-        this.timestamp = timestamp;
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        this.timestamp = new Date(ts.getTime());
         this.weather = weather;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -91,11 +100,11 @@ public class ExtremeEvent {
         this.description = description;
     }
 
-    public Timestamp getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
