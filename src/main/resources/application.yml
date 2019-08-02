@@ -1,15 +1,13 @@
 server:
   port: 8082
 
+url:
+  openCageApiUrl: https://api.opencagedata.com/geocode/v1/json?q=
+  pretty: pretty=1
+
+key:
+  openCageApiKey: e696e04572d344d4b1191de598cd0a75
+
 spring:
   application:
     name: ExtremeEvents
-  datasource:
-    url:
-
-url:
-  openCageApiUrl: "https://api.opencagedata.com/geocode/v1/json?q="
-  pretty: "&pretty=1"
-
-key:
-  openCageApiKey: "e696e04572d344d4b1191de598cd0a75"

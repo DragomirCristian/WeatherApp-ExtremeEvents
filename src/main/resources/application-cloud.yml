@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      database: shedLock
+      uri: mongodb+srv://internship:lucratorcomputer@cluster0-2dvtu.mongodb.net/test?retryWrites=true&w=majority
+      admin: extremeevents
+      password: lucratorcomputer
