@@ -5,6 +5,7 @@ import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
 import com.google.gson.Gson;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,4 +47,13 @@ public class ExtremeEventsController {
         return new ResponseEntity<>(extremeEvent, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void test() throws IOException {
+        BufferedImage image = ImageIO.read(new File("C:\\Users\\mihai.botez\\Desktop\\git\\ExtremeEvents\\WeatherApp-ExtremeEvents/test.jpg"));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", outputStream);
+        Base64 base64 = new Base64();
+        String encodedString = new String(Base64.encodeBase64(outputStream.toByteArray()));
+
+    }
 }
