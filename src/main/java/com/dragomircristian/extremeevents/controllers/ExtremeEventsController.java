@@ -4,7 +4,6 @@ import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
-import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.sql.Timestamp;
@@ -27,19 +25,21 @@ public class ExtremeEventsController {
     @Autowired
     ExtremeEventsService extremeEventsService;
 
-    @RequestMapping(value = "/county/{county}?p={pageNumber}&s={pageSize}", method = RequestMethod.GET)
-    public ResponseEntity<String> findAllExtremeEvents(@PathVariable("county") String county, @PathVariable("pageNumber") int pageNumber, @PathVariable("pageSize") int pageSize) {
-//        List<ExtremeEvent> events = extremeEventsService.findAllByCounty(county, new PageRequest(pageNumber, pageSize));
-        return new ResponseEntity<>("haha", HttpStatus.OK);
+    @RequestMapping(value = "/county/{county}", params = {"p", "s"}, method = RequestMethod.GET)
+    public ResponseEntity<List> findAllByCounty(@PathVariable("county") String county, @RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) {
+        List<ExtremeEvent> events = extremeEventsService.findAllByCounty(county, PageRequest.of(pageNumber, pageSize));
+        return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/country/{country}", params = {"p", "s"}, method = RequestMethod.GET)
+    public ResponseEntity<List> findAllByCountry(@PathVariable("country") String country, @RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) {
+        List<ExtremeEvent> events = extremeEventsService.findAllByCountry(country, PageRequest.of(pageNumber, pageSize));
+        return new ResponseEntity<>(events, HttpStatus.OK);
+    }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public ResponseEntity<ArrayList> getAllExtremeEvents() {
-        ArrayList<ExtremeEvent> events = extremeEventsService.getAllExtremeEvents();
-
-//        Gson gson = new Gson();
-//        String eventsJson = gson.toJson(events);
+    @RequestMapping(value = "/all", params = {"p", "s"}, method = RequestMethod.GET)
+    public ResponseEntity<ArrayList> getAllExtremeEvents(@RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) {
+        ArrayList<ExtremeEvent> events = extremeEventsService.getAllExtremeEvents(PageRequest.of(pageNumber, pageSize));
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
 
@@ -48,6 +48,7 @@ public class ExtremeEventsController {
         Location location = new Location("45.631910", "27.533800");
         ExtremeEvent extremeEvent = new ExtremeEvent(location, "title", "description", new Weather(), "djnadinadna link");
         extremeEventsService.setCityAndCountry(extremeEvent);
+        extremeEventsService.insertExtremeEvent(extremeEvent);
         return new ResponseEntity<>(new ExtremeEvent(), HttpStatus.OK);
     }
 

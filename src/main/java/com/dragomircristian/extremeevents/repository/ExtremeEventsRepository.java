@@ -2,7 +2,6 @@ package com.dragomircristian.extremeevents.repository;
 
 import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
