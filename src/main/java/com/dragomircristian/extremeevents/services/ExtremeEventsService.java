@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,9 +37,9 @@ public class ExtremeEventsService {
         return extremeEventsRepository.findById(id).get();
     }
 
-    public ArrayList<ExtremeEvent> getAllExtremeEvents() {
+    public ArrayList<ExtremeEvent> getAllExtremeEvents(PageRequest pageRequest) {
         ArrayList<ExtremeEvent> list = new ArrayList<>();
-        for (ExtremeEvent extremeEvent : extremeEventsRepository.findAll()) {
+        for (ExtremeEvent extremeEvent : extremeEventsRepository.findAll(pageRequest)) {
             list.add(extremeEvent);
         }
         return list;
@@ -76,7 +75,7 @@ public class ExtremeEventsService {
         headers.setBearerAuth(openCageApiKey);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
         String url = openCageApiUrl + extremeEvent.getLocation().getLatitude() + "%2C" + extremeEvent.getLocation().getLongitude() + "&key=" + openCageApiKey + "&" + pretty;
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
         Gson gson = new Gson();
         JsonObject responseObj = gson.fromJson(response.getBody(), JsonObject.class);
