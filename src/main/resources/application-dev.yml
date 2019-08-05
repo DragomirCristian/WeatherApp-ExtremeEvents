@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      database: extremeevents
+      uri: mongodb://localhost:27017/extremeevents
+      admin: extremeevents
+      password: lucratorcomputer
