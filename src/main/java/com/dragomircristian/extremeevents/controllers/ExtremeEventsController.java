@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,12 +57,24 @@ public class ExtremeEventsController {
     }
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() throws IOException {
-        BufferedImage image = ImageIO.read(new File("C:\\Users\\mihai.botez\\Desktop\\git\\ExtremeEvents\\WeatherApp-ExtremeEvents/test.jpg"));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", outputStream);
-        Base64 base64 = new Base64();
-        String encodedString = new String(Base64.encodeBase64(outputStream.toByteArray()));
+    public void test() throws Exception {
+//        BufferedImage image = ImageIO.read(new File("D:\\Programare\\InternshipNTT\\extremeWeather\\WeatherApp-ExtremeEvents\\test.jpg"));
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        ImageIO.write(image, "jpg", outputStream);
+//        Base64 base64 = new Base64();
+//        String encodedString = new String(Base64.encodeBase64(outputStream.toByteArray()));
+//        System.out.println(encodedString);
 
+        StringBuilder sb=new StringBuilder();
+        File file=new File("D:\\\\Programare\\\\InternshipNTT\\\\extremeWeather\\\\WeatherApp-ExtremeEvents\\\\test.mp4");
+        InputStream inStream = null;
+        BufferedInputStream bis = null;
+        inStream = new FileInputStream(file);
+        bis = new BufferedInputStream(inStream);
+        while(bis.available()>0) {
+           // System.out.println(Integer.toBinaryString(bis.read()));
+            sb.append(Integer.toBinaryString(bis.read()));
+        }
+        System.out.println(sb);
     }
 }
