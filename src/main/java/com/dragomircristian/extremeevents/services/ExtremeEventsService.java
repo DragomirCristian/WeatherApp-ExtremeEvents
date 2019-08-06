@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,19 +38,15 @@ public class ExtremeEventsService {
         return extremeEventsRepository.findById(id).get();
     }
 
-    public ArrayList<ExtremeEvent> getAllExtremeEvents(PageRequest pageRequest) {
-        ArrayList<ExtremeEvent> list = new ArrayList<>();
-        for (ExtremeEvent extremeEvent : extremeEventsRepository.findAll(pageRequest)) {
-            list.add(extremeEvent);
-        }
-        return list;
+    public Page<ExtremeEvent> getAllExtremeEvents(PageRequest pageRequest) {
+        return extremeEventsRepository.findAll(pageRequest);
     }
 
-    public List<ExtremeEvent> findAllByCounty(String county, PageRequest pageRequest) {
+    public Page<ExtremeEvent> findAllByCounty(String county, PageRequest pageRequest) {
         return extremeEventsRepository.findAllByCounty(county, pageRequest);
     }
 
-    public List<ExtremeEvent> findAllByCountry(String country, PageRequest pageRequest) {
+    public Page<ExtremeEvent> findAllByCountry(String country, PageRequest pageRequest) {
         return extremeEventsRepository.findAllByCountry(country, pageRequest);
     }
 
@@ -75,7 +72,7 @@ public class ExtremeEventsService {
         headers.setBearerAuth(openCageApiKey);
         HttpEntity<String> entity = new HttpEntity<>("body", headers);
         String url = openCageApiUrl + extremeEvent.getLocation().getLatitude() + "%2C" + extremeEvent.getLocation().getLongitude() + "&key=" + openCageApiKey + "&" + pretty;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
         Gson gson = new Gson();
         JsonObject responseObj = gson.fromJson(response.getBody(), JsonObject.class);
