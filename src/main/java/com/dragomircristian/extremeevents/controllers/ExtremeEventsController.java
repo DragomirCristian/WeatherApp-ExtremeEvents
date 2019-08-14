@@ -93,4 +93,12 @@ public class ExtremeEventsController {
         }
         System.out.println(sb);
     }
+
+
+
+    @RequestMapping(value="/upload",method=RequestMethod.POST)
+    public void upload(){
+
+
+    }
 }
