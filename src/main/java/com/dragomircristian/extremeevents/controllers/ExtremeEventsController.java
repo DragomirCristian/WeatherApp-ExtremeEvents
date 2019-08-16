@@ -6,6 +6,12 @@ import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.BucketInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.google.gson.Gson;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +29,7 @@ import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/extreme-events")
@@ -30,7 +37,6 @@ public class ExtremeEventsController {
 
     @Autowired
     ExtremeEventsService extremeEventsService;
-
     @RequestMapping(value = "/county/{county}", params = {"p", "s"}, method = RequestMethod.GET)
     public ResponseEntity<Page<ExtremeEvent>> findAllByCounty(@PathVariable("county") String county, @RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
         if (pageNumber < -0)
@@ -98,7 +104,15 @@ public class ExtremeEventsController {
 
     @RequestMapping(value="/upload",method=RequestMethod.POST)
     public void upload(){
-
-
+        Credentials credentials = null;
+        try {
+            credentials = GoogleCredentials
+                    .fromStream(new FileInputStream("C:\\central-insight-236815-fe3ff1a881e4.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials)
+                .setProjectId("central-insight-236815").build().getService();
+        Bucket bucket = storage.create(BucketInfo.of("weatherxxxxxxxx"));
     }
 }
