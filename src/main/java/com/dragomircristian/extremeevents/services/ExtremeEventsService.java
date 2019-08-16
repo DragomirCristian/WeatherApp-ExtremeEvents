@@ -1,6 +1,8 @@
 package com.dragomircristian.extremeevents.services;
 
 import com.dragomircristian.extremeevents.entities.ExtremeEvent;
+import com.dragomircristian.extremeevents.entities.Location;
+import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.repository.ExtremeEventsRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -64,6 +67,21 @@ public class ExtremeEventsService {
 
     public boolean exists(String id) {
         return extremeEventsRepository.findById(id).isPresent();
+    }
+
+    // needs to be completed
+    public void addExtremeEvent(Location location, String title, String description, Weather weather) {
+        ExtremeEvent extremeEvent = new ExtremeEvent();
+        extremeEvent.setLocation(location);
+        extremeEvent.setTitle(title);
+        extremeEvent.setDescription(description);
+        extremeEvent.setWeather(weather);
+        setCityAndCountry(extremeEvent);
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // img link and/or vid link
+
     }
 
     public void setCityAndCountry(ExtremeEvent extremeEvent) {

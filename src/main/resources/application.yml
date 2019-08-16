@@ -10,4 +10,4 @@ key:
 
 spring:
   application:
-    name: ExtremeEvents
+    name: extreme-events

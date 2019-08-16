@@ -1,5 +1,6 @@
 package com.dragomircristian.extremeevents.entities;
 
+import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
@@ -7,9 +8,9 @@ import java.sql.Timestamp;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Data;
-
 @Data
+@Setter
+@Getter
 @Document(collection = "extremeevents")
 public class ExtremeEvent {
     @Id
@@ -21,42 +22,43 @@ public class ExtremeEvent {
     private String country;
     private Date timestamp;
     private Weather weather;
-    private String img_link;
-    private String vid_link;
+    private String imgLink;
+    private String vidLink;
 
     public ExtremeEvent() {
-
+        Timestamp ts = new Timestamp(System.currentTimeMillis());
+        this.timestamp = new Date(ts.getTime());
     }
 
-    public ExtremeEvent(Location location, String title, String description, Weather weather, String img_link, String vid_link) {
+    public ExtremeEvent(Location location, String title, String description, Weather weather, String imgLink, String vidLink) {
         this.location = location;
         this.title = title;
         this.description = description;
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
-        this.img_link = img_link;
-        this.vid_link = vid_link;
+        this.imgLink = imgLink;
+        this.vidLink = vidLink;
     }
 
-    public ExtremeEvent(Location location, String title, String description, Weather weather, String img_link) {
+    public ExtremeEvent(Location location, String title, String description, Weather weather, String imgLink) {
         this.location = location;
         this.title = title;
         this.description = description;
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
-        this.img_link = img_link;
+        this.imgLink = imgLink;
     }
 
-    public ExtremeEvent(String vid_link, Location location, String title, String description, Weather weather) {
+    public ExtremeEvent(String vidLink, Location location, String title, String description, Weather weather) {
         this.location = location;
         this.title = title;
         this.description = description;
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
-        this.vid_link = vid_link;
+        this.vidLink = vidLink;
     }
 
     public ExtremeEvent(Location location, String title, String description, Weather weather) {
@@ -66,85 +68,5 @@ public class ExtremeEvent {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public Weather getWeather() {
-        return weather;
-    }
-
-    public void setWeather(Weather weather) {
-        this.weather = weather;
-    }
-
-    public String getImg_link() {
-        return img_link;
-    }
-
-    public void setImg_link(String img_link) {
-        this.img_link = img_link;
-    }
-
-    public String getVid_link() {
-        return vid_link;
-    }
-
-    public void setVid_link(String vid_link) {
-        this.vid_link = vid_link;
-    }
-
-    public String getCounty() {
-        return county;
-    }
-
-    public void setCounty(String county) {
-        this.county = county;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 }
