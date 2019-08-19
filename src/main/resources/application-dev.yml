@@ -8,6 +8,9 @@ spring:
       admin: extremeevents
       password: lucratorcomputer
 
+url:
+  weatherAppApiUrl: http://localhost:8081/weather/
+
 eureka:
   client:
     fetch-registry: true

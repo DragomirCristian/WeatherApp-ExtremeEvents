@@ -8,6 +8,9 @@ spring:
       admin: extremeevents
       password: lucratorcomputer
 
+url:
+  weatherAppApiUrl: https://weather-now-micro.herokuapp.com/weather/
+
 eureka:
   client:
     fetch-registry: true

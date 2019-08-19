@@ -4,6 +4,7 @@ server:
 url:
   openCageApiUrl: https://api.opencagedata.com/geocode/v1/json?q=
   pretty: pretty=1
+  weatherAppApiUrl: https://localhost:8081/weather/
 
 key:
   openCageApiKey: e696e04572d344d4b1191de598cd0a75

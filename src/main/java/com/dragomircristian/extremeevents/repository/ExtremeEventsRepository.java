@@ -10,5 +10,5 @@ import java.util.List;
 public interface ExtremeEventsRepository extends PagingAndSortingRepository<ExtremeEvent, String> {
 
     Page<ExtremeEvent> findAllByCountry(String country, Pageable pageable);
-    Page<ExtremeEvent> findAllByCounty(String county, Pageable pageable);
+    Page<ExtremeEvent> findAllByCity(String county, Pageable pageable);
 }

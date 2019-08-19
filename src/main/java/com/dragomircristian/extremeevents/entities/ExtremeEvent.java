@@ -18,7 +18,7 @@ public class ExtremeEvent {
     private Location location;
     private String title;
     private String description;
-    private String county;
+    private String city;
     private String country;
     private Date timestamp;
     private Weather weather;
@@ -68,5 +68,21 @@ public class ExtremeEvent {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
+    }
+
+    @Override
+    public String toString() {
+        return "ExtremeEvent{" +
+                "id='" + id + '\'' +
+                ", location=" + location +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                ", timestamp=" + timestamp +
+                ", weather=" + weather +
+                ", imgLink='" + imgLink + '\'' +
+                ", vidLink='" + vidLink + '\'' +
+                '}';
     }
 }
