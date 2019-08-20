@@ -7,6 +7,11 @@ import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.forms.ExtremeEventForm;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
+
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,25 +68,33 @@ public class ExtremeEventsController {
         extremeEventsService.deleteExtremeEventById(id);
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() throws Exception {
-//        BufferedImage image = ImageIO.read(new File("D:\\Programare\\InternshipNTT\\extremeWeather\\WeatherApp-ExtremeEvents\\test.jpg"));
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        ImageIO.write(image, "jpg", outputStream);
-//        Base64 base64 = new Base64();
-//        String encodedString = new String(Base64.encodeBase64(outputStream.toByteArray()));
-//        System.out.println(encodedString);
-
-        StringBuilder sb = new StringBuilder();
-        File file = new File("D:\\\\Programare\\\\InternshipNTT\\\\extremeWeather\\\\WeatherApp-ExtremeEvents\\\\test.mp4");
-        InputStream inStream = null;
-        BufferedInputStream bis = null;
-        inStream = new FileInputStream(file);
-        bis = new BufferedInputStream(inStream);
-        while (bis.available() > 0) {
-            // System.out.println(Integer.toBinaryString(bis.read()));
-            sb.append(Integer.toBinaryString(bis.read()));
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public String upload() {
+        Credentials credentials = null;
+        try {
+            credentials = GoogleCredentials
+                    .fromStream(new FileInputStream("C:\\central-insight-236815-fe3ff1a881e4.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(sb);
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials)
+                .setProjectId("central-insight-236815").build().getService();
+        try {
+            String[] allowedExtensions = {"jpg", "png", "jpeg", "gif"};
+            String[] allowedVideoExtensions = {"mp4", "wmv", "flv"};
+            String filePath = "C:\\Users\\mihai.botez\\Desktop\\git\\ExtremeEvents\\WeatherApp-ExtremeEvents\\test.mp4";
+            String fileType = null;
+            if (extremeEventsService.getFileType(filePath, allowedExtensions, "image") != null)
+                fileType = extremeEventsService.getFileType(filePath, allowedExtensions, "image");
+            else
+                fileType = extremeEventsService.getFileType(filePath, allowedVideoExtensions, "video");
+            String[] arr = filePath.split("\\\\", 0);
+            String name = arr[arr.length - 1];
+            String link = extremeEventsService.uploadImage(name, filePath, fileType, credentials, storage);
+            return link;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error";
+        }
     }
 }

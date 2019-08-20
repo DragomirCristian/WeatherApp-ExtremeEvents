@@ -8,6 +8,8 @@ import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.repository.ExtremeEventsRepository;
+import com.google.auth.Credentials;
+import com.google.cloud.storage.*;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Configuration
@@ -108,4 +117,33 @@ public class ExtremeEventsService {
         extremeEvent.setCountry(StringUtils.stripAccents(country));
     }
 
+
+    public String uploadImage(String fileName, String filePath, String fileType, Credentials credentials, Storage storage) throws IOException {
+        Bucket bucket = getBucket("weather-app-bucket", credentials);
+        InputStream inputStream = new FileInputStream(new File(filePath));
+        Blob blob = bucket.create(fileName, inputStream, fileType);
+        String name = blob.getName();
+        BlobId blobId = BlobId.of("weather-app-bucket", name);
+        Acl acl = storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+        return blob.getMediaLink();
+    }
+
+
+    private Bucket getBucket(String bucketName, Credentials credentials) throws IOException {
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+        Bucket bucket = storage.get(bucketName);
+        if (bucket == null) {
+            throw new IOException("Bucket not found:" + bucketName);
+        }
+        return bucket;
+    }
+
+    public String getFileType(String filePath, String[] extensions, String type) {
+        for (String extension : extensions) {
+            if (filePath.endsWith(extension)) {
+                return type +"/"+ extension;
+            }
+        }
+        return null;
+    }
 }
