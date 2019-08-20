@@ -1,7 +1,19 @@
 spring:
+  profiles:
+    cloud
   data:
     mongodb:
       database: extremeevents
       uri: mongodb+srv://internship:lucratorcomputer@cluster0-2dvtu.mongodb.net/test?retryWrites=true&w=majority
       admin: extremeevents
       password: lucratorcomputer
+
+url:
+  weatherAppApiUrl: https://weather-now-micro.herokuapp.com/weather/
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      default-zone: https://weather-app-eureka-server.herokuapp.com/eureka/

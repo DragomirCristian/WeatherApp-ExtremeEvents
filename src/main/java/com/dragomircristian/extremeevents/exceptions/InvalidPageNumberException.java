@@ -1,4 +1,4 @@
-package com.dragomircristian.extremeevents.Exceptions;
+package com.dragomircristian.extremeevents.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;

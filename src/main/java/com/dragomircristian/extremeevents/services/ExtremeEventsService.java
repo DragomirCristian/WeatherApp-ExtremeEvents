@@ -1,19 +1,22 @@
 package com.dragomircristian.extremeevents.services;
 
+import com.byteowls.jopencage.JOpenCageGeocoder;
+import com.byteowls.jopencage.model.JOpenCageComponents;
+import com.byteowls.jopencage.model.JOpenCageResponse;
+import com.byteowls.jopencage.model.JOpenCageReverseRequest;
 import com.dragomircristian.extremeevents.entities.ExtremeEvent;
+import com.dragomircristian.extremeevents.entities.Location;
+import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.repository.ExtremeEventsRepository;
 import com.google.auth.Credentials;
 import com.google.cloud.storage.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -37,6 +40,9 @@ public class ExtremeEventsService {
     @Value("${key.openCageApiKey}")
     private String openCageApiKey;
 
+    @Value("${url.weatherAppApiUrl}")
+    private String weatherAppApiUrl;
+
     @Autowired
     ExtremeEventsRepository extremeEventsRepository;
 
@@ -48,8 +54,8 @@ public class ExtremeEventsService {
         return extremeEventsRepository.findAll(pageRequest);
     }
 
-    public Page<ExtremeEvent> findAllByCounty(String county, PageRequest pageRequest) {
-        return extremeEventsRepository.findAllByCounty(county, pageRequest);
+    public Page<ExtremeEvent> findAllByCity(String city, PageRequest pageRequest) {
+        return extremeEventsRepository.findAllByCity(city, pageRequest);
     }
 
     public Page<ExtremeEvent> findAllByCountry(String country, PageRequest pageRequest) {
@@ -72,31 +78,43 @@ public class ExtremeEventsService {
         return extremeEventsRepository.findById(id).isPresent();
     }
 
-    public void setCityAndCountry(ExtremeEvent extremeEvent) {
+    // needs to be completed
+    public void addExtremeEvent(Location location, String title, String description) {
+        ExtremeEvent extremeEvent = new ExtremeEvent();
+        extremeEvent.setLocation(location);
+        extremeEvent.setTitle(title);
+        extremeEvent.setDescription(description);
+        setCityAndCountry(extremeEvent);
+
         RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(openCageApiKey);
-        HttpEntity<String> entity = new HttpEntity<>("body", headers);
-        String url = openCageApiUrl + extremeEvent.getLocation().getLatitude() + "%2C" + extremeEvent.getLocation().getLongitude() + "&key=" + openCageApiKey + "&" + pretty;
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
+        ResponseEntity<String> response
+                = restTemplate.getForEntity(weatherAppApiUrl + extremeEvent.getCity(), String.class);
         Gson gson = new Gson();
-        JsonObject responseObj = gson.fromJson(response.getBody(), JsonObject.class);
-        String country;
-        String county;
-        try {
-            country = responseObj.get("results").getAsJsonArray().get(0).getAsJsonObject().get("components").getAsJsonObject().get("country").getAsString();
-        } catch (NullPointerException e) {
-            country = "-";
-        }
-        try {
-            county = responseObj.get("results").getAsJsonArray().get(0).getAsJsonObject().get("components").getAsJsonObject().get("county").getAsString();
-        } catch (NullPointerException e) {
-            county = "-";
-        }
+        Weather weather = gson.fromJson(response.getBody(), Weather.class);
+        System.out.println(weather);
+        extremeEvent.setWeather(weather);
 
-        extremeEvent.setCounty(county);
-        extremeEvent.setCountry(country);
+
+        // img link and/or vid link
+
+    }
+
+    public void setCityAndCountry(ExtremeEvent extremeEvent) {
+        JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(openCageApiKey);
+        JOpenCageReverseRequest request = new JOpenCageReverseRequest(Double.parseDouble(extremeEvent.getLocation().getLatitude()), Double.parseDouble(extremeEvent.getLocation().getLongitude()));
+        request.setLanguage("en");
+        request.setNoDedupe(true);
+        request.setLimit(5);
+        request.setNoAnnotations(true);
+
+        JOpenCageResponse response = jOpenCageGeocoder.reverse(request);
+
+        JOpenCageComponents components = response.getResults().get(0).getComponents();
+        String city = components.getCity();
+        String country = components.getCountry();
+
+        extremeEvent.setCity(StringUtils.stripAccents(city));
+        extremeEvent.setCountry(StringUtils.stripAccents(country));
     }
 
 
