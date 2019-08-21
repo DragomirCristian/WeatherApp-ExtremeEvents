@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 
@@ -100,8 +101,10 @@ public class ExtremeEventsController {
     }
 
     @RequestMapping(value = "/upload-extreme-event", method = RequestMethod.POST)
-    public ResponseEntity<?> upload(@RequestHeader(value = "Authorization") String access_token) {
+    public ResponseEntity<?> upload(@RequestHeader(value = "Authorization") String access_token, @RequestBody String token) {
         System.out.println(access_token);
+        RestTemplate restTemplate= new RestTemplate();
+        ResponseEntity<?> responseEntity=restTemplate.getForObject("localhost")
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
