@@ -10,6 +10,6 @@ public class Comment {
     @Id
     private String id;
     private String textComment;
-    private  UserDetails userDetails;
+   // private  UserDetails userDetails;
 
 }
