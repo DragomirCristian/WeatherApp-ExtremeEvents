@@ -34,8 +34,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-//import org.springframework.web.client.RestTemplate;
 
+//import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpMethod;
 import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -121,64 +122,34 @@ public class ExtremeEventsController {
             return "Error";
         }
     }
-    @Autowired
-    private RestTemplate restTemplate;
     @RequestMapping(value = "/upload-extreme-event", method = RequestMethod.POST)
     public ResponseEntity<?> upload(@RequestHeader(value = "Authorization") String access_token) throws GeneralSecurityException {
-       // System.out.println(access_token);
-       // RestTemplate restTemplate= new RestTemplate();
-       // ResponseEntity responseEntity=restTemplate.postForEntity("https://localhost:8445/check-token",access_token,String.class);
-       // LOGGER.info((String)responseEntity.getBody());
+        System.out.println(access_token);
+        TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+        SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
+                NoopHostnameVerifier.INSTANCE);
 
-//        TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
-//        SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-//        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
-//                NoopHostnameVerifier.INSTANCE);
-//
-//        Registry<ConnectionSocketFactory> socketFactoryRegistry =
-//                RegistryBuilder.<ConnectionSocketFactory> create()
-//                        .register("https", sslsf)
-//                        .register("http", new PlainConnectionSocketFactory())
-//                        .build();
-//
-//        BasicHttpClientConnectionManager connectionManager =
-//                new BasicHttpClientConnectionManager(socketFactoryRegistry);
-//        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
-//                .setConnectionManager(connectionManager).build();
-//        String urlOverHttps="https://localhost:8445/check-token";
-//        HttpComponentsClientHttpRequestFactory requestFactory =
-//                new HttpComponentsClientHttpRequestFactory(httpClient);
-//        RestTemplate restTemplate=new RestTemplate(requestFactory);
-//     //   ResponseEntity responseEntity=restTemplate.postForEntity("https://localhost:8445/check-token",access_token,String.class);
-//        ResponseEntity<String> response =restTemplate
-//                .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
+        Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                RegistryBuilder.<ConnectionSocketFactory> create()
+                        .register("https", sslsf)
+                        .register("http", new PlainConnectionSocketFactory())
+                        .build();
 
+        BasicHttpClientConnectionManager connectionManager =
+                new BasicHttpClientConnectionManager(socketFactoryRegistry);
+        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
+                .setConnectionManager(connectionManager).build();
+        String urlOverHttps="https://localhost:8445/check-token";
+        HttpComponentsClientHttpRequestFactory requestFactory =
+                new HttpComponentsClientHttpRequestFactory(httpClient);
+        RestTemplate restTemplate=new RestTemplate(requestFactory);
+        ResponseEntity<String> response =restTemplate
+                .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
 
-        ResponseEntity responseEntity=restTemplate.postForEntity("https://localhost:8445/check-token",access_token,String.class);
         LOGGER.info("test");
         return new ResponseEntity<>("test", HttpStatus.OK);
     }
 
-    @Bean
-    public RestTemplate restTemplate()
-            throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
-        SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom()
-                .loadTrustMaterial(null, acceptingTrustStrategy)
-                .build();
-
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setSSLSocketFactory(csf)
-                .build();
-
-        HttpComponentsClientHttpRequestFactory requestFactory =
-                new HttpComponentsClientHttpRequestFactory();
-
-        requestFactory.setHttpClient(httpClient);
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
-        return restTemplate;
-    }
 }
