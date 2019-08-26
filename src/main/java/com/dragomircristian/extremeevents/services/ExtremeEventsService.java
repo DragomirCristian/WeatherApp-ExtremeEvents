@@ -79,8 +79,7 @@ public class ExtremeEventsService {
     }
 
     // needs to be completed
-    public void addExtremeEvent(Location location, String title, String description) {
-        ExtremeEvent extremeEvent = new ExtremeEvent();
+    public void addExtremeEvent(ExtremeEvent extremeEvent,Location location, String title, String description) {
         extremeEvent.setLocation(location);
         extremeEvent.setTitle(title);
         extremeEvent.setDescription(description);

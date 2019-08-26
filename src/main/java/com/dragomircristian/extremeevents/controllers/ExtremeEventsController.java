@@ -28,15 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 //import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpMethod;
 import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.security.GeneralSecurityException;
@@ -145,11 +143,16 @@ public class ExtremeEventsController {
         HttpComponentsClientHttpRequestFactory requestFactory =
                 new HttpComponentsClientHttpRequestFactory(httpClient);
         RestTemplate restTemplate=new RestTemplate(requestFactory);
-        ResponseEntity<String> response =restTemplate
-                .exchange(urlOverHttps, HttpMethod.POST, null, String.class);
 
-        LOGGER.info("test");
-        return new ResponseEntity<>("test", HttpStatus.OK);
+        LOGGER.info("urmeaza return");
+        String authorizationHeader=access_token;
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("Authorization",authorizationHeader);
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestHeaders);
+        ResponseEntity<String> response =restTemplate
+                .exchange(urlOverHttps, HttpMethod.GET,requestEntity, String.class);
+        return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+
     }
 
 
