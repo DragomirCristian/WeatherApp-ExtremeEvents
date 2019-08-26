@@ -125,6 +125,7 @@ public class ExtremeEventsController {
     @RequestMapping(value = "/upload-extreme-event", method = RequestMethod.POST)
     public ResponseEntity<?> upload(@RequestHeader(value = "Authorization") String access_token) throws GeneralSecurityException {
         System.out.println(access_token);
+        LOGGER.info("sunt in endpoint");
         TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
         SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
@@ -145,7 +146,7 @@ public class ExtremeEventsController {
                 new HttpComponentsClientHttpRequestFactory(httpClient);
         RestTemplate restTemplate=new RestTemplate(requestFactory);
         ResponseEntity<String> response =restTemplate
-                .exchange(urlOverHttps, HttpMethod.GET, null, String.class);
+                .exchange(urlOverHttps, HttpMethod.POST, null, String.class);
 
         LOGGER.info("test");
         return new ResponseEntity<>("test", HttpStatus.OK);
