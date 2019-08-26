@@ -5,6 +5,7 @@ import com.dragomircristian.extremeevents.exceptions.InvalidPageSizeException;
 import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import com.dragomircristian.extremeevents.entities.Location;
 import com.dragomircristian.extremeevents.entities.Weather;
+import com.dragomircristian.extremeevents.forms.CommentForm;
 import com.dragomircristian.extremeevents.forms.ExtremeEventForm;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
 
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Null;
+import javax.xml.ws.Response;
 import java.io.*;
 
 @RestController
@@ -28,8 +31,8 @@ public class ExtremeEventsController {
     @Autowired
     ExtremeEventsService extremeEventsService;
 
-    @RequestMapping(value = "/city/{city}", params = {"p", "s"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<ExtremeEvent>> findAllByCity(@PathVariable("city") String city, @RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
+    @RequestMapping(value = "/city/{city}", params = {"pageNumber", "pageSize"}, method = RequestMethod.GET)
+    public ResponseEntity<Page<ExtremeEvent>> findAllByCity(@PathVariable("city") String city, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
         if (pageNumber < -0)
             throw new InvalidPageNumberException();
         if (pageSize <= 0)
@@ -37,8 +40,8 @@ public class ExtremeEventsController {
         return new ResponseEntity<>(extremeEventsService.findAllByCity(city, PageRequest.of(pageNumber, pageSize)), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/country/{country}", params = {"p", "s"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<ExtremeEvent>> findAllByCountry(@PathVariable("country") String country, @RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
+    @RequestMapping(value = "/country/{country}", params = {"pageNumber", "pageSize"}, method = RequestMethod.GET)
+    public ResponseEntity<Page<ExtremeEvent>> findAllByCountry(@PathVariable("country") String country, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
         if (pageNumber < 0)
             throw new InvalidPageNumberException();
         if (pageSize <= 0)
@@ -46,8 +49,8 @@ public class ExtremeEventsController {
         return new ResponseEntity<>(extremeEventsService.findAllByCountry(country, PageRequest.of(pageNumber, pageSize)), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/all", params = {"p", "s"}, method = RequestMethod.GET)
-    public ResponseEntity<Page<ExtremeEvent>> getAllExtremeEvents(@RequestParam("p") int pageNumber, @RequestParam("s") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
+    @RequestMapping(value = "/all", params = {"pageNumber", "pageSize"}, method = RequestMethod.GET)
+    public ResponseEntity<Page<ExtremeEvent>> getAllExtremeEvents(@RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize) throws InvalidPageNumberException, InvalidPageSizeException {
         if (pageNumber < 0)
             throw new InvalidPageNumberException();
         if (pageSize <= 0)
@@ -97,4 +100,35 @@ public class ExtremeEventsController {
             return "Error";
         }
     }
+
+    @RequestMapping(value = "/vote/{idExtremeEvent}/{vote}", method = RequestMethod.POST)
+    public ResponseEntity<String> vote(@PathVariable("idExtremeEvent") String idExtremeEvent, @PathVariable("vote") String vote, @RequestBody (required = false) CommentForm comment) {
+        switch (vote) {
+            case "like":
+                try {
+                    extremeEventsService.like(extremeEventsService.getExtremeEventById(idExtremeEvent), comment.getComment());
+                } catch (NullPointerException e) {
+                    extremeEventsService.like(extremeEventsService.getExtremeEventById(idExtremeEvent));
+                }
+                if (comment == null) {
+                    return new ResponseEntity<String>("You just liked the event with id " + idExtremeEvent + ".", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("You just liked and commented the event with id " + idExtremeEvent + ".", HttpStatus.OK);
+                }
+            case "dislike":
+                try {
+                    extremeEventsService.dislike(extremeEventsService.getExtremeEventById(idExtremeEvent), comment.getComment());
+                } catch (NullPointerException e) {
+                    extremeEventsService.dislike(extremeEventsService.getExtremeEventById(idExtremeEvent));
+                }
+                if (comment == null) {
+                    return new ResponseEntity<String>("You just disliked the event with id " + idExtremeEvent + ".", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("You just disliked and commented the event with id " + idExtremeEvent + ".", HttpStatus.OK);
+                }
+            default:
+                return new ResponseEntity<>("{vote} should be either like or dislike.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

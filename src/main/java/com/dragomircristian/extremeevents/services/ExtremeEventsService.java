@@ -4,9 +4,9 @@ import com.byteowls.jopencage.JOpenCageGeocoder;
 import com.byteowls.jopencage.model.JOpenCageComponents;
 import com.byteowls.jopencage.model.JOpenCageResponse;
 import com.byteowls.jopencage.model.JOpenCageReverseRequest;
-import com.dragomircristian.extremeevents.entities.ExtremeEvent;
-import com.dragomircristian.extremeevents.entities.Location;
-import com.dragomircristian.extremeevents.entities.Weather;
+import com.dragomircristian.extremeevents.entities.*;
+import com.dragomircristian.extremeevents.repository.CommentRepository;
+import com.dragomircristian.extremeevents.repository.ExtremeEventReviewRepository;
 import com.dragomircristian.extremeevents.repository.ExtremeEventsRepository;
 import com.google.auth.Credentials;
 import com.google.cloud.storage.*;
@@ -25,8 +25,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Configuration
@@ -45,6 +46,14 @@ public class ExtremeEventsService {
 
     @Autowired
     ExtremeEventsRepository extremeEventsRepository;
+
+    @Autowired
+    ExtremeEventReviewRepository extremeEventReviewRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtremeEventsService.class);
 
     public ExtremeEvent getExtremeEventById(String id) {
         return extremeEventsRepository.findById(id).get();
@@ -91,7 +100,7 @@ public class ExtremeEventsService {
                 = restTemplate.getForEntity(weatherAppApiUrl + extremeEvent.getCity(), String.class);
         Gson gson = new Gson();
         Weather weather = gson.fromJson(response.getBody(), Weather.class);
-        System.out.println(weather);
+        LOGGER.info("Weather: {}", weather);
         extremeEvent.setWeather(weather);
 
 
@@ -117,7 +126,6 @@ public class ExtremeEventsService {
         extremeEvent.setCountry(StringUtils.stripAccents(country));
     }
 
-
     public String uploadImage(String fileName, String filePath, String fileType, Credentials credentials, Storage storage) throws IOException {
         Bucket bucket = getBucket("weather-app-bucket", credentials);
         InputStream inputStream = new FileInputStream(new File(filePath));
@@ -127,7 +135,6 @@ public class ExtremeEventsService {
         Acl acl = storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
         return blob.getMediaLink();
     }
-
 
     private Bucket getBucket(String bucketName, Credentials credentials) throws IOException {
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
@@ -141,9 +148,73 @@ public class ExtremeEventsService {
     public String getFileType(String filePath, String[] extensions, String type) {
         for (String extension : extensions) {
             if (filePath.endsWith(extension)) {
-                return type +"/"+ extension;
+                return type + "/" + extension;
             }
         }
         return null;
+    }
+
+    public boolean existsReview(ExtremeEvent extremeEvent) {
+        ExtremeEventReview extremeEventReview = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
+        return extremeEventReview != null;
+    }
+
+    public void like(ExtremeEvent extremeEvent) {
+        ExtremeEventReview review;
+        if (existsReview(extremeEvent)) {
+            review = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
+            review.setLikes(review.getLikes() + 1);
+            extremeEventReviewRepository.save(review);
+        } else {
+            ExtremeEventReview newReview = new ExtremeEventReview(extremeEvent);
+            newReview.setLikes(1);
+            extremeEventReviewRepository.save(newReview);
+        }
+    }
+
+    public void like(ExtremeEvent extremeEvent, String comment) {
+        ExtremeEventReview review;
+        if (existsReview(extremeEvent)) {
+            review = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
+            review.setLikes(review.getLikes() + 1);
+            Comment commentObj = new Comment(comment);
+            review.getComments().add(commentObj);
+            commentRepository.save(commentObj);
+            extremeEventReviewRepository.save(review);
+        } else {
+            ExtremeEventReview newReview = new ExtremeEventReview(extremeEvent);
+            newReview.setLikes(1);
+            newReview.getComments().add(new Comment(comment));
+            extremeEventReviewRepository.save(newReview);
+        }
+    }
+
+    public void dislike(ExtremeEvent extremeEvent) {
+        ExtremeEventReview review;
+        if (existsReview(extremeEvent)) {
+            review = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
+            review.setDislikes(review.getDislikes() + 1);
+            extremeEventReviewRepository.save(review);
+        } else {
+            ExtremeEventReview newReview = new ExtremeEventReview(extremeEvent);
+            newReview.setDislikes(1);
+            extremeEventReviewRepository.save(newReview);
+        }
+    }
+
+    public void dislike(ExtremeEvent extremeEvent, String comment) {
+        ExtremeEventReview review;
+        if (existsReview(extremeEvent)) {
+            review = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
+            review.setDislikes(review.getDislikes() + 1);
+            Comment commentObj = new Comment(comment);
+            review.getComments().add(commentObj);
+            commentRepository.save(commentObj);
+            extremeEventReviewRepository.save(review);
+        } else {
+            ExtremeEventReview newReview = new ExtremeEventReview(extremeEvent);
+            newReview.getComments().add(new Comment(comment));
+            extremeEventReviewRepository.save(newReview);
+        }
     }
 }
