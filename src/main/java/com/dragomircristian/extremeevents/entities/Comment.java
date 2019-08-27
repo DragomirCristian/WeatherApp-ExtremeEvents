@@ -14,10 +14,8 @@ public class Comment {
     @Id
     private String id;
     private String textComment;
-//    private  UserDetails userDetails;
-
+  
     public Comment(String textComment) {
         this.textComment = textComment;
     }
-
 }

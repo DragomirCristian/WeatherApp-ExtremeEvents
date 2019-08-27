@@ -9,6 +9,7 @@ import com.dragomircristian.extremeevents.repository.CommentRepository;
 import com.dragomircristian.extremeevents.repository.ExtremeEventReviewRepository;
 import com.dragomircristian.extremeevents.repository.ExtremeEventsRepository;
 import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +26,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 @Service
 @Configuration
@@ -88,11 +89,13 @@ public class ExtremeEventsService {
     }
 
     // needs to be completed
-    public void addExtremeEvent(Location location, String title, String description) {
+    public void addExtremeEvent(Location location, String title, String description, String email, String link) {
         ExtremeEvent extremeEvent = new ExtremeEvent();
         extremeEvent.setLocation(location);
         extremeEvent.setTitle(title);
         extremeEvent.setDescription(description);
+        extremeEvent.setUser(email);
+        extremeEvent.addLink(link);
         setCityAndCountry(extremeEvent);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -100,12 +103,12 @@ public class ExtremeEventsService {
                 = restTemplate.getForEntity(weatherAppApiUrl + extremeEvent.getCity(), String.class);
         Gson gson = new Gson();
         Weather weather = gson.fromJson(response.getBody(), Weather.class);
+
         LOGGER.info("Weather: {}", weather);
+      
         extremeEvent.setWeather(weather);
 
-
-        // img link and/or vid link
-
+        this.insertExtremeEvent(extremeEvent);
     }
 
     public void setCityAndCountry(ExtremeEvent extremeEvent) {
@@ -153,6 +156,36 @@ public class ExtremeEventsService {
         }
         return null;
     }
+
+
+    public String upload() {
+        Credentials credentials = null;
+        try {
+            credentials = GoogleCredentials
+                    .fromStream(new FileInputStream("C:\\central-insight-236815-fe3ff1a881e4.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials)
+                .setProjectId("central-insight-236815").build().getService();
+        try {
+            String[] allowedExtensions = {"jpg", "png", "jpeg", "gif"};
+            String[] allowedVideoExtensions = {"mp4", "wmv", "flv"};
+            String filePath = "C:\\Users\\mihai.botez\\Desktop\\git\\ExtremeEvents\\WeatherApp-ExtremeEvents\\test.mp4";
+            String fileType = null;
+            if (this.getFileType(filePath, allowedExtensions, "image") != null)
+                fileType = this.getFileType(filePath, allowedExtensions, "image");
+            else
+                fileType = this.getFileType(filePath, allowedVideoExtensions, "video");
+            String[] arr = filePath.split("\\\\", 0);
+            String name = arr[arr.length - 1];
+            String link = this.uploadImage(name, filePath, fileType, credentials, storage);
+            return link;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error";
+            }
+       }
 
     public boolean existsReview(ExtremeEvent extremeEvent) {
         ExtremeEventReview extremeEventReview = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
