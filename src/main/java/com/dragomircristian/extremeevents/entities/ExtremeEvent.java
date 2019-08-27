@@ -3,8 +3,10 @@ package com.dragomircristian.extremeevents.entities;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,10 +26,13 @@ public class ExtremeEvent {
     private Weather weather;
     private String imgLink;
     private String vidLink;
+    private String user;
+    private List<String> links;
 
     public ExtremeEvent() {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
+        this.links=new ArrayList<>();
     }
 
     public ExtremeEvent(Location location, String title, String description, Weather weather, String imgLink, String vidLink) {
@@ -69,7 +74,9 @@ public class ExtremeEvent {
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
     }
-
+    public void addLink(String link){
+        links.add(link);
+    }
     @Override
     public String toString() {
         return "ExtremeEvent{" +
