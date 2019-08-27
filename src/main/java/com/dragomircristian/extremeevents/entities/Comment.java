@@ -1,15 +1,21 @@
 package com.dragomircristian.extremeevents.entities;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document(collection = "users")
+@Document(collection = "comments")
+@Setter
+@Getter
 public class Comment {
     @Id
     private String id;
     private String textComment;
-   // private  UserDetails userDetails;
-
+  
+    public Comment(String textComment) {
+        this.textComment = textComment;
+    }
 }
