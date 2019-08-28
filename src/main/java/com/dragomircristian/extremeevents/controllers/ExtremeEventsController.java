@@ -5,7 +5,6 @@ import com.dragomircristian.extremeevents.exceptions.InvalidPageSizeException;
 import com.dragomircristian.extremeevents.entities.ExtremeEvent;
 import com.dragomircristian.extremeevents.entities.Location;
 
-import com.dragomircristian.extremeevents.entities.Weather;
 import com.dragomircristian.extremeevents.forms.CommentForm;
 import com.dragomircristian.extremeevents.forms.ExtremeEventForm;
 import com.dragomircristian.extremeevents.services.ExtremeEventsService;
@@ -33,14 +32,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-
 import javax.net.ssl.SSLContext;
 
 import java.security.GeneralSecurityException;
-
-import javax.validation.constraints.Null;
-import javax.xml.ws.Response;
-import java.io.*;
 
 @RestController
 @RequestMapping("/extreme-events")
@@ -106,7 +100,6 @@ public class ExtremeEventsController {
                 new HttpComponentsClientHttpRequestFactory(httpClient);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-        LOGGER.info("urmeaza return");
         String authorizationHeader = access_token;
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Authorization", authorizationHeader);
@@ -120,7 +113,7 @@ public class ExtremeEventsController {
     }
 
     @RequestMapping(value = "/vote/{idExtremeEvent}/{vote}", method = RequestMethod.POST)
-    public ResponseEntity<String> vote(@PathVariable("idExtremeEvent") String idExtremeEvent, @PathVariable("vote") String vote, @RequestBody (required = false) CommentForm comment) {
+    public ResponseEntity<String> vote(@PathVariable("idExtremeEvent") String idExtremeEvent, @PathVariable("vote") String vote, @RequestBody(required = false) CommentForm comment) {
         switch (vote) {
             case "like":
                 try {

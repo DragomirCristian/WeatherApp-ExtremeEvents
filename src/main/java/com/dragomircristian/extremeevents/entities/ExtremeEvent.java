@@ -32,7 +32,7 @@ public class ExtremeEvent {
     public ExtremeEvent() {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         this.timestamp = new Date(ts.getTime());
-        this.links=new ArrayList<>();
+        this.links = new ArrayList<>();
     }
 
     public ExtremeEvent(Location location, String title, String description, Weather weather, String imgLink, String vidLink) {
@@ -74,9 +74,11 @@ public class ExtremeEvent {
         this.timestamp = new Date(ts.getTime());
         this.weather = weather;
     }
-    public void addLink(String link){
+
+    public void addLink(String link) {
         links.add(link);
     }
+
     @Override
     public String toString() {
         return "ExtremeEvent{" +

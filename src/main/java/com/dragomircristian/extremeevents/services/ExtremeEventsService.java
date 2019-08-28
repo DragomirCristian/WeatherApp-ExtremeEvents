@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,6 @@ public class ExtremeEventsService {
         return extremeEventsRepository.findById(id).isPresent();
     }
 
-    // needs to be completed
     public void addExtremeEvent(Location location, String title, String description, String email, String link) {
         ExtremeEvent extremeEvent = new ExtremeEvent();
         extremeEvent.setLocation(location);
@@ -105,7 +105,7 @@ public class ExtremeEventsService {
         Weather weather = gson.fromJson(response.getBody(), Weather.class);
 
         LOGGER.info("Weather: {}", weather);
-      
+
         extremeEvent.setWeather(weather);
 
         this.insertExtremeEvent(extremeEvent);
@@ -113,7 +113,8 @@ public class ExtremeEventsService {
 
     public void setCityAndCountry(ExtremeEvent extremeEvent) {
         JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(openCageApiKey);
-        JOpenCageReverseRequest request = new JOpenCageReverseRequest(Double.parseDouble(extremeEvent.getLocation().getLatitude()), Double.parseDouble(extremeEvent.getLocation().getLongitude()));
+        JOpenCageReverseRequest request = new JOpenCageReverseRequest(Double.parseDouble(extremeEvent.getLocation().getLatitude()),
+                Double.parseDouble(extremeEvent.getLocation().getLongitude()));
         request.setLanguage("en");
         request.setNoDedupe(true);
         request.setLimit(5);
@@ -157,7 +158,6 @@ public class ExtremeEventsService {
         return null;
     }
 
-
     public String upload() {
         Credentials credentials = null;
         try {
@@ -184,8 +184,8 @@ public class ExtremeEventsService {
         } catch (IOException e) {
             e.printStackTrace();
             return "Error";
-            }
-       }
+        }
+    }
 
     public boolean existsReview(ExtremeEvent extremeEvent) {
         ExtremeEventReview extremeEventReview = extremeEventReviewRepository.findByExtremeEvent(extremeEvent);
